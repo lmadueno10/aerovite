@@ -72,7 +72,7 @@ export const LowStockWidget = ({ items, loading = false }: LowStockWidgetProps) 
                                             {item.stock} units
                                         </p>
                                         <Badge
-                                            variant={isCritical ? "destructive" : "secondary"}
+                                            variant={isCritical ? "destructive" : "warning"}
                                             className="text-xs"
                                         >
                                             {isCritical ? "Critical" : "Low"}

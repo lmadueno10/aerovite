@@ -23,8 +23,8 @@ interface InventoryTableProps {
 export const InventoryTable = ({ inventory, loading }: InventoryTableProps) => {
     const getStockBadge = useCallback((stock: number) => {
         if (stock < 20) return <Badge variant="destructive">Low Stock</Badge>;
-        if (stock < 50) return <Badge variant="secondary">Medium</Badge>;
-        return <Badge variant="default">In Stock</Badge>;
+        if (stock < 50) return <Badge variant="warning">Medium</Badge>;
+        return <Badge variant="success">In Stock</Badge>;
     }, []);
 
     const columns = useMemo<ColumnDef<AutoPart>[]>(
