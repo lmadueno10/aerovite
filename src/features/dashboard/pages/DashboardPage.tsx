@@ -1,4 +1,5 @@
-import { Sidebar } from "../components/Sidebar";
+import { PageContainer } from "@shared/components/layout/PageContainer";
+import { DashboardGrid } from "@shared/components/layout/DashboardGrid";
 import { StatsCards } from "../components/StatsCards";
 import { InventoryTable } from "../components/InventoryTable";
 import { useDashboardStats } from "../hooks/useDashboardStats";
@@ -9,17 +10,19 @@ export const DashboardPage = () => {
     const { data: inventory = [], isLoading: inventoryLoading } = useInventory();
 
     return (
-        <div className="flex h-screen">
-            <Sidebar />
-            <main className="flex-1 overflow-y-auto bg-white">
-                <div className="p-8">
-                    <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-                    <div className="space-y-8">
-                        <StatsCards stats={stats} loading={statsLoading} />
-                        <InventoryTable inventory={inventory} loading={inventoryLoading} />
-                    </div>
-                </div>
-            </main>
-        </div>
+        <PageContainer
+            title="Dashboard Overview"
+            description="Monitor your auto parts business performance"
+        >
+            <div className="space-y-6">
+                {/* KPI Cards */}
+                <DashboardGrid columns={4}>
+                    <StatsCards stats={stats} loading={statsLoading} />
+                </DashboardGrid>
+
+                {/* Inventory Table */}
+                <InventoryTable inventory={inventory} loading={inventoryLoading} />
+            </div>
+        </PageContainer>
     );
 };
