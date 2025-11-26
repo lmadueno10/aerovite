@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Sidebar } from "@shared/components/layout/Sidebar";
 import { DashboardPage } from "@features/dashboard";
 
 // Create a client
@@ -17,7 +18,12 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <DashboardPage />
+      <div className="flex h-screen overflow-hidden bg-gray-50">
+        <Sidebar currentPath={window.location.pathname} />
+        <main className="flex-1 overflow-y-auto">
+          <DashboardPage />
+        </main>
+      </div>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
