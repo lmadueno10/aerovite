@@ -1,6 +1,6 @@
 # Aerovite
 
-A React + TypeScript project built with **Clean Architecture** principles, featuring a modern auto-parts e-commerce dashboard.
+A modern React + TypeScript auto-parts e-commerce dashboard built with **Feature-Based Architecture**.
 
 ## Tech Stack
 
@@ -8,99 +8,82 @@ A React + TypeScript project built with **Clean Architecture** principles, featu
 - **UI Library**: shadcn/ui (Tailwind CSS v4)
 - **State Management**: Zustand
 - **Icons**: Lucide React
-- **Architecture**: Clean Architecture
+- **Architecture**: Feature-Based (2024 standards)
 
-## Architecture Overview
+## Project Structure
 
-This project follows the Clean Architecture separation of concerns, dividing the application into four distinct layers:
-
-### 1. Core (Domain & Use Cases)
-- **Domain**: Contains pure TypeScript entities and interfaces (e.g., `User`, `AutoPart`, `DashboardStats`, `InventoryRepository`). This layer is independent of any framework or external library.
-- **Use Cases**: Contains application business logic (e.g., `GetUser`, `GetInventory`, `GetDashboardStats`). It orchestrates data flow between the Domain and the outside world.
-
-### 2. Infrastructure
-- Contains implementations of the interfaces defined in the Core layer (e.g., `UserApiRepository`, `MockInventoryRepository`).
-- Handles external concerns like API calls (using Axios), mock data, etc.
-
-### 3. Presentation
-- **Hooks**: Adapters that connect the UI to the Use Cases (e.g., `useUser`, `useInventory`, `useDashboardStats`). They handle state management and side effects.
-- **Components**: React components that display data and capture user interactions. Built with shadcn/ui components.
-- **Pages**: Top-level page components (e.g., `Dashboard`, `UserProfile`).
-- **Store**: Zustand stores for global UI state (e.g., `useAppStore` for sidebar, theme, selected menu).
-
-### 4. DI (Dependency Injection)
-- A Composition Root that wires up the dependencies (e.g., injecting `MockInventoryRepository` into `GetInventory`).
-
-### Dependency Rule
-
-Dependencies only point **inwards**:
-- Presentation → Core
-- Infrastructure → Core
-- Core depends on NOTHING (or only other Core elements).
-
-### Data Flow Example (Dashboard Stats)
-
-1. **UI**: `Dashboard` component calls `useDashboardStats()`.
-2. **Presentation**: `useDashboardStats` hook calls `di.getDashboardStats.execute()`.
-3. **Core (Use Case)**: `GetDashboardStats` calls `inventoryRepository.getDashboardStats()`.
-4. **Infrastructure**: `MockInventoryRepository` returns mock data (simulating an API call).
-5. **Result**: Data flows back up: Repo → UseCase → Hook → UI.
-
-## shadcn/ui Integration
-
-This project uses **shadcn/ui** with **Tailwind CSS v4**. Components are installed on-demand and stored in `src/components/ui/`.
-
-### Installed Components
-- `card`, `table`, `button`, `badge`, `separator`, `sheet`, `input`
-
-### Configuration
-- **Tailwind Config**: `tailwind.config.js` (uses Tailwind v4 syntax)
-- **PostCSS**: `postcss.config.js` (uses `@tailwindcss/postcss`)
-- **CSS**: `src/index.css` (uses `@import "tailwindcss"`)
-- **Path Alias**: `@/*` maps to `./src/*` (configured in `tsconfig.json` and `vite.config.ts`)
-
-## Zustand State Management
-
-Zustand is used for global UI state management. It fits into Clean Architecture as part of the **Presentation layer**.
-
-### Store: `useAppStore`
-Located at `src/presentation/store/useAppStore.ts`, it manages:
-- `sidebarOpen`: Sidebar visibility
-- `selectedMenu`: Currently selected menu item
-- `theme`: Light/Dark theme (future feature)
-
-Zustand is **not** used for domain logic or business state—only for UI concerns like sidebar state and theme.
-
-## Dashboard Feature
-
-The dashboard demonstrates Clean Architecture with a real-world example:
-
-### Domain
-- `AutoPart`: Entity representing an auto part (id, name, sku, stock, price, category)
-- `DashboardStats`: Entity representing dashboard statistics (sales, orders, revenue, products)
-- `InventoryRepository`: Interface for fetching inventory and stats
-
-### Use Cases
-- `GetInventory`: Fetches list of auto parts
-- `GetDashboardStats`: Fetches dashboard statistics
-
-### Infrastructure
-- `MockInventoryRepository`: Mock implementation with sample data
-
-### Presentation
-- `Dashboard`: Main dashboard page
-- `Sidebar`: Navigation sidebar with menu items
-- `StatsCards`: Overview cards (sales, orders, revenue, products)
-- `InventoryTable`: Table listing auto parts with stock status badges
-
-## Path Aliases
-
-All imports use the `@/` alias to avoid relative imports (`../../`):
-
-```typescript
-import { AutoPart } from "@/core/domain/AutoPart";
-import { useAppStore } from "@/presentation/store/useAppStore";
 ```
+src/
+├── features/              # Feature modules (self-contained)
+│   ├── dashboard/         # Dashboard feature
+│   │   ├── components/    # Dashboard-specific components
+│   │   ├── pages/         # Dashboard pages
+│   │   ├── hooks/         # Data fetching & logic
+│   │   ├── services/      # API calls
+│   │   ├── types/         # TypeScript types
+│   │   └── index.ts       # Public API
+│   └── user/              # User feature
+│       ├── components/
+│       ├── pages/
+│       ├── hooks/
+│       ├── services/
+│       ├── types/
+│       └── index.ts
+├── shared/                # Shared resources
+│   ├── components/
+│   │   └── ui/            # shadcn/ui design system
+│   ├── lib/               # Utilities
+│   └── store/             # Global state (Zustand)
+├── App.tsx
+└── main.tsx
+```
+
+## Architecture Principles
+
+### Feature-Based Organization
+Each feature is **self-contained** and owns everything it needs:
+- ✅ **Components**: UI specific to the feature
+- ✅ **Pages**: Route components
+- ✅ **Hooks**: Data fetching and business logic
+- ✅ **Services**: API calls and external operations
+- ✅ **Types**: TypeScript interfaces and types
+- ✅ **Public API**: Barrel export (`index.ts`)
+
+### Shared Resources
+Code used across **2+ features** lives in `shared/`:
+- **UI Components**: shadcn/ui design system
+- **Utilities**: Formatters, validators, helpers
+- **Global State**: App-wide Zustand stores (sidebar, theme, auth)
+
+### Import Conventions
+```typescript
+// Feature imports (from outside the feature)
+import { DashboardPage } from '@features/dashboard';
+
+// Shared imports
+import { Button } from '@shared/components/ui/button';
+import { useAppStore } from '@shared/store/appStore';
+
+// Internal feature imports (within the feature)
+import { useInventory } from '../hooks/useInventory';
+import type { AutoPart } from '../types/inventory';
+```
+
+## Features
+
+### Dashboard
+Auto-parts inventory management dashboard with:
+- **Stats Cards**: Sales, orders, revenue, products overview
+- **Inventory Table**: Product listing with stock status badges
+- **Sidebar Navigation**: Feature navigation menu
+
+**Tech**: Mock data service, Zustand for UI state, shadcn/ui components
+
+### User (Demo)
+User profile display feature demonstrating:
+- External API integration (JSONPlaceholder)
+- Dynamic data fetching
+- Feature isolation
 
 ## Installation
 
@@ -110,12 +93,14 @@ npm install
 
 ## Development
 
-Make sure to use Node 18+ or Node 20:
+**Important**: Use Node 18+ or Node 20
 
 ```bash
 nvm use 20
 npm run dev
 ```
+
+Visit `http://localhost:5173`
 
 ## Build
 
@@ -123,20 +108,93 @@ npm run dev
 npm run build
 ```
 
-## Project Structure
+## Path Aliases
 
+The project uses three path aliases:
+
+| Alias | Maps To | Usage |
+|-------|---------|-------|
+| `@/*` | `./src/*` | Legacy/general imports |
+| `@features/*` | `./src/features/*` | Feature imports |
+| `@shared/*` | `./src/shared/*` | Shared resource imports |
+
+## Adding a New Feature
+
+1. **Create feature folder**:
+   ```bash
+   mkdir -p src/features/my-feature/{components,pages,hooks,services,types}
+   ```
+
+2. **Add feature files**:
+   - `types/` - TypeScript interfaces
+   - `services/` - API calls
+   - `hooks/` - Data fetching hooks
+   - `components/` - UI components
+   - `pages/` - Route pages
+
+3. **Create barrel export** (`index.ts`):
+   ```typescript
+   export { MyFeaturePage } from './pages/MyFeaturePage';
+   export type { MyType } from './types';
+   ```
+
+4. **Use in App**:
+   ```typescript
+   import { MyFeaturePage } from '@features/my-feature';
+   ```
+
+## Why Feature-Based Architecture?
+
+### vs Clean Architecture
+
+| Aspect | Feature-Based | Clean Architecture |
+|--------|--------------|-------------------|
+| **Learning Curve** | 15 minutes | 2+ hours |
+| **New Feature Time** | 30 minutes | 2 hours |
+| **Files to Touch** | 1 folder | 4+ folders |
+| **Colocation** | ✅ Everything together | ❌ Scattered across layers |
+| **Refactoring** | Delete 1 folder | Delete from 4+ folders |
+
+### Benefits
+- 🚀 **Faster Development**: Everything for a feature in one place
+- 🎯 **Easier Navigation**: No jumping between domain/usecases/infrastructure
+- 📦 **Better Colocation**: Related code lives together
+- 🔧 **Pragmatic**: Add complexity only when needed
+- 🌱 **Scalable**: Easy to add/remove features
+
+## State Management
+
+### Feature State (Zustand)
+Each feature can have its own Zustand store for feature-specific state:
+```typescript
+// features/dashboard/store/dashboardStore.ts
+export const useDashboardStore = create((set) => ({
+  filters: {},
+  setFilters: (filters) => set({ filters }),
+}));
 ```
-src/
-├── core/
-│   ├── domain/          # Entities & Repository Interfaces
-│   └── usecases/        # Business Logic
-├── infrastructure/
-│   └── repositories/    # Repository Implementations
-├── presentation/
-│   ├── components/      # UI Components (shadcn/ui)
-│   ├── hooks/           # React Hooks (View Models)
-│   ├── pages/           # Page Components
-│   └── store/           # Zustand Stores
-├── di/                  # Dependency Injection
-└── lib/                 # Utilities (shadcn/ui utils)
+
+### Global State
+App-wide state lives in `shared/store/`:
+```typescript
+// shared/store/appStore.ts
+export const useAppStore = create((set) => ({
+  sidebarOpen: true,
+  theme: 'light',
+  toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+}));
 ```
+
+## Contributing
+
+When adding code, follow these rules:
+
+1. **Feature-specific code** → `features/{feature-name}/`
+2. **Shared code (used in 2+ features)** → `shared/`
+3. **Use barrel exports** → Only export public API
+4. **Use path aliases** → `@features/*`, `@shared/*`
+5. **Keep features independent** → Avoid cross-feature imports
+
+## License
+
+MIT
