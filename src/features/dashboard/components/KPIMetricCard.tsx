@@ -38,7 +38,7 @@ export const KPIMetricCard = ({
 
     // Count-up animation
     useEffect(() => {
-        const duration = 1000; // 1 second
+        const duration = 1000;
         const steps = 60;
         const increment = value / steps;
         let current = 0;
@@ -67,16 +67,17 @@ export const KPIMetricCard = ({
         return displayValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }, [displayValue, isCurrency, isPercentage]);
 
-    // Transform sparkline data for Recharts
+    // Transform sparkline data
     const chartData = useMemo(() => sparkline.map((value) => ({ value })), [sparkline]);
 
     return (
-        <Card className="relative overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow">
-            {/* Unified Layout Structure */}
-            <div className="flex flex-col h-full p-6">
-                {/* Header Row - Fixed Height */}
-                <div className="flex items-start justify-between mb-3 h-10">
-                    <h3 className="text-sm font-medium text-gray-600 leading-5">{title}</h3>
+        <Card className="relative overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
+            {/* Strict Grid Layout for Perfect Alignment */}
+            <div className="grid grid-rows-[auto_1fr_auto_auto] gap-4 h-full min-h-[200px]">
+
+                {/* Row 1: Header (Title + Icon) - Fixed Height */}
+                <div className="flex items-center justify-between h-10">
+                    <h3 className="text-sm font-medium text-gray-600">{title}</h3>
                     {icon && (
                         <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg flex-shrink-0">
                             {typeof icon === 'string' ? (
@@ -91,13 +92,13 @@ export const KPIMetricCard = ({
                     )}
                 </div>
 
-                {/* Value Row - Fixed Height */}
-                <div className="mb-3 h-12 flex items-center">
+                {/* Row 2: Value - Flexible but Centered */}
+                <div className="flex items-center">
                     <p className="text-4xl font-bold text-gray-900 leading-none">{formattedValue}</p>
                 </div>
 
-                {/* Trend Row - Fixed Height */}
-                <div className="flex items-center gap-2 mb-4 h-6">
+                {/* Row 3: Trend - Fixed Height */}
+                <div className="flex items-center gap-2 h-6">
                     {!isNeutralTrend && (
                         <>
                             {isPositiveTrend ? (
@@ -116,40 +117,38 @@ export const KPIMetricCard = ({
                             </span>
                         </>
                     )}
-                    <span className="text-sm text-gray-500 truncate">{trendLabel}</span>
+                    <span className="text-sm text-gray-500">{trendLabel}</span>
                 </div>
 
-                {/* Sparkline Row - Fixed Height */}
-                <div className="flex-1 min-h-[4rem]">
+                {/* Row 4: Sparkline - Fixed Height */}
+                <div className="h-16">
                     {chartData.length > 0 && (
-                        <div className="h-16 -mb-2">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={chartData}>
-                                    <defs>
-                                        <linearGradient id={`gradient-${title}`} x1="0" y1="0" x2="0" y2="1">
-                                            <stop
-                                                offset="0%"
-                                                stopColor={isPositiveTrend ? "#10b981" : "#ef4444"}
-                                                stopOpacity={0.3}
-                                            />
-                                            <stop
-                                                offset="100%"
-                                                stopColor={isPositiveTrend ? "#10b981" : "#ef4444"}
-                                                stopOpacity={0}
-                                            />
-                                        </linearGradient>
-                                    </defs>
-                                    <Area
-                                        type="monotone"
-                                        dataKey="value"
-                                        stroke={isPositiveTrend ? "#10b981" : "#ef4444"}
-                                        strokeWidth={2}
-                                        fill={`url(#gradient-${title})`}
-                                        isAnimationActive={true}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id={`gradient-${title}`} x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                            offset="0%"
+                                            stopColor={isPositiveTrend ? "#10b981" : "#ef4444"}
+                                            stopOpacity={0.3}
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stopColor={isPositiveTrend ? "#10b981" : "#ef4444"}
+                                            stopOpacity={0}
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <Area
+                                    type="monotone"
+                                    dataKey="value"
+                                    stroke={isPositiveTrend ? "#10b981" : "#ef4444"}
+                                    strokeWidth={2}
+                                    fill={`url(#gradient-${title})`}
+                                    isAnimationActive={true}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     )}
                 </div>
             </div>
