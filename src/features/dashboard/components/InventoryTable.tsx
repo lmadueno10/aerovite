@@ -10,7 +10,7 @@ import {
 import { Badge } from "@shared/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
+import { TableSearch } from "@shared/components/table/TableSearch";
 import { useDataTable, type ColumnDef, flexRender } from "@shared/hooks/useDataTable";
 import type { AutoPart } from "../types/inventory";
 import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
@@ -121,14 +121,12 @@ export const InventoryTable = ({ inventory, loading }: InventoryTableProps) => {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {/* Filter Input */}
+                    {/* Global Search */}
                     <div className="flex items-center gap-2">
-                        <Input
-                            placeholder="Filter by category..."
-                            value={(table.getColumn("category")?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
-                                table.getColumn("category")?.setFilterValue(event.target.value)
-                            }
+                        <TableSearch
+                            value={table.getState().globalFilter ?? ""}
+                            onChange={(value) => table.setGlobalFilter(value)}
+                            placeholder="Search..."
                             className="max-w-sm"
                         />
                     </div>

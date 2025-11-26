@@ -7,11 +7,11 @@ import {
     type ColumnDef,
     type SortingState,
     type ColumnFiltersState,
-    type PaginationState,
+    flexRender,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
-export interface UseDataTableProps<TData> {
+interface UseDataTableProps<TData> {
     data: TData[];
     columns: ColumnDef<TData>[];
     pageSize?: number;
@@ -24,10 +24,7 @@ export function useDataTable<TData>({
 }: UseDataTableProps<TData>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize,
-    });
+    const [globalFilter, setGlobalFilter] = useState('');
 
     const table = useReactTable({
         data,
@@ -35,20 +32,23 @@ export function useDataTable<TData>({
         state: {
             sorting,
             columnFilters,
-            pagination,
+            globalFilter,
+            pagination: {
+                pageIndex: 0,
+                pageSize,
+            },
         },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
-        onPaginationChange: setPagination,
+        onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        globalFilterFn: 'includesString',
     });
 
     return table;
 }
 
-// Export TanStack Table types for convenience
-export type { ColumnDef, Row, Table } from '@tanstack/react-table';
-export { flexRender } from '@tanstack/react-table';
+export { flexRender, type ColumnDef };

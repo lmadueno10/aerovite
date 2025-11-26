@@ -59,19 +59,74 @@ src/
 │
 ├── shared/
 │   ├── components/
-│   │   └── ui/               # shadcn/ui design system
-│   │       ├── button.tsx
-│   │       ├── card.tsx
-│   │       ├── table.tsx
-│   │       └── ...
+│   │   ├── ui/               # shadcn/ui design system
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── table.tsx
+│   │   │   └── ...
+│   │   └── table/            # Table utilities
+│   │       └── TableSearch.tsx
 │   ├── lib/
 │   │   └── utils.ts          # Utility functions
+│   ├── hooks/
+│   │   └── useDataTable.ts   # TanStack Table hook
 │   └── store/
 │       └── appStore.ts       # Global Zustand store
 │
 ├── App.tsx
 ├── main.tsx
 └── index.css
+```
+
+---
+
+## UI Patterns
+
+### Tables
+
+#### Global Multi-Column Search
+
+**All tables in the project use a unified global search pattern that searches across all visible columns.**
+
+##### Standard Behavior
+- Search input filters rows across **every column** currently rendered in the table
+- Uses TanStack Table's `globalFilter` state with `includesString` filter function
+- Case-insensitive search across all string-based columns
+
+##### Component Usage
+```typescript
+import { TableSearch } from "@shared/components/table/TableSearch";
+
+// In your table component:
+<TableSearch
+  value={table.getState().globalFilter ?? ""}
+  onChange={(value) => table.setGlobalFilter(value)}
+  placeholder="Search..."
+  className="max-w-sm"
+/>
+```
+
+##### Visual Standards
+- **Icon**: Magnifying glass (Search icon from lucide-react) positioned on the left
+- **Placeholder**: Generic text like "Search..." or "Search in table..."
+- **Styling**: Consistent with shadcn/ui Input component
+
+##### Implementation Requirements
+1. Use the shared `<TableSearch />` component from `@shared/components/table/TableSearch`
+2. Connect to `table.getState().globalFilter` and `table.setGlobalFilter()`
+3. Do NOT implement table-specific single-column filters
+4. Do NOT use custom placeholder text that references specific columns
+
+##### Hook Integration
+The `useDataTable` hook automatically includes global filter support:
+```typescript
+const table = useDataTable({
+  data: myData,
+  columns: myColumns,
+  pageSize: 10,
+});
+
+// Global filter is already configured with 'includesString' filter function
 ```
 
 ---
@@ -345,6 +400,7 @@ export const useAppStore = create((set) => ({
 | Feature-specific component | `features/{name}/components/` | Only used in this feature |
 | Reusable component (2+ features) | `shared/components/common/` | Shared across features |
 | Design system component | `shared/components/ui/` | Part of UI library (shadcn) |
+| Table utility component | `shared/components/table/` | Table-specific shared components |
 | Feature page | `features/{name}/pages/` | Route component |
 | Data fetching hook | `features/{name}/hooks/` | Feature-specific logic |
 | Generic utility hook | `shared/hooks/` | Used across features |
@@ -385,6 +441,11 @@ export const useAppStore = create((set) => ({
 - ✅ Keep components near their hooks
 - ✅ Keep types near their usage
 - ❌ Don't scatter related code
+
+### 6. Use Global Table Search
+- ✅ Use `<TableSearch />` for all table search inputs
+- ✅ Search across all columns, not single columns
+- ❌ Don't implement custom single-column filters
 
 ---
 
@@ -438,6 +499,9 @@ Yes, via:
 
 ### How do I handle shared types?
 Start in the feature. Move to `shared/types/` when used in 2+ features.
+
+### How do I implement table search?
+Use the global `<TableSearch />` component from `@shared/components/table/TableSearch`. It automatically searches across all columns.
 
 ---
 
