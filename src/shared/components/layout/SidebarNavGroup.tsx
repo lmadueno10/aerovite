@@ -52,44 +52,53 @@ export const SidebarNavGroup = ({ item, currentPath }: SidebarNavGroupProps) => 
                         )}
 
                         {hasChildren && (
-                            isExpanded ? (
-                                <ChevronDown className="h-4 w-4 text-gray-500" />
-                            ) : (
-                                <ChevronRight className="h-4 w-4 text-gray-500" />
-                            )
+                            <div className="transition-transform duration-200">
+                                {isExpanded ? (
+                                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4 text-gray-500" />
+                                )}
+                            </div>
                         )}
                     </>
                 )}
             </button>
 
-            {/* Children */}
-            {hasChildren && isExpanded && !isCollapsed && (
-                <div className="ml-5 mt-1 space-y-1 border-l-2 border-gray-200 pl-3">
-                    {item.children?.map((child) => {
-                        const ChildIcon = child.icon;
-                        const isChildActive = currentPath === child.href;
+            {/* Children with smooth animation */}
+            {hasChildren && !isCollapsed && (
+                <div
+                    className={cn(
+                        "overflow-hidden transition-all duration-300 ease-in-out",
+                        isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    )}
+                >
+                    <div className="ml-5 mt-1 space-y-1 border-l-2 border-gray-200 pl-3">
+                        {item.children?.map((child) => {
+                            const ChildIcon = child.icon;
+                            const isChildActive = currentPath === child.href;
 
-                        return (
-                            <a
-                                key={child.href}
-                                href={child.href}
-                                className={cn(
-                                    "flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
-                                    isChildActive
-                                        ? "bg-primary/10 text-primary font-medium"
-                                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                                )}
-                            >
-                                <ChildIcon className="h-4 w-4 flex-shrink-0" />
-                                <span className="flex-1">{child.title}</span>
-                                {child.badge && (
-                                    <Badge variant="secondary" className="h-5 px-1.5 text-xs">
-                                        {child.badge}
-                                    </Badge>
-                                )}
-                            </a>
-                        );
-                    })}
+                            return (
+                                <a
+                                    key={child.href}
+                                    href={child.href}
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
+                                        isChildActive
+                                            ? "bg-primary/10 text-primary font-medium"
+                                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                    )}
+                                >
+                                    <ChildIcon className="h-4 w-4 flex-shrink-0" />
+                                    <span className="flex-1">{child.title}</span>
+                                    {child.badge && (
+                                        <Badge variant="secondary" className="h-5 px-1.5 text-xs">
+                                            {child.badge}
+                                        </Badge>
+                                    )}
+                                </a>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
         </div>
