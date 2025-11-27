@@ -129,6 +129,142 @@ const table = useDataTable({
 // Global filter is already configured with 'includesString' filter function
 ```
 
+### Authentication
+
+**Aerovite uses a fully mocked authentication system with session persistence.**
+
+#### Architecture Overview
+
+- **Session Management**: Zustand + localStorage
+- **Route Protection**: Component-based guards (`<ProtectedRoute>`, `<PublicRoute>`)
+- **Form Validation**: React Hook Form + Zod
+- **Backend**: Fully mocked (accepts any credentials)
+
+#### Folder Structure
+
+```
+features/auth/
+├── components/
+│   ├── AuthLayout.tsx          # Shared layout for auth pages
+│   ├── ProtectedRoute.tsx      # Route guard for authenticated routes
+│   └── PublicRoute.tsx         # Route guard for public auth pages
+├── pages/
+│   ├── LoginPage.tsx
+│   ├── SignupPage.tsx
+│   ├── ForgotPasswordPage.tsx
+│   └── ResetPasswordPage.tsx
+├── services/
+│   └── authService.ts          # Mocked auth API calls
+├── store/
+│   └── authStore.ts            # Zustand store + localStorage
+├── hooks/
+│   └── useAuth.ts              # Auth hook for components
+├── types/
+│   └── auth.ts                 # User, AuthState, Credentials types
+└── index.ts                    # Public API
+```
+
+#### How It Works
+
+**1. Mocked Authentication Service**
+
+The auth service (`features/auth/services/authService.ts`) simulates API calls:
+- Accepts any email/password combination
+- Returns mock user + JWT token
+- Simulates network delays (300-1200ms)
+- Always succeeds (no error states)
+
+```typescript
+// Example: Login accepts any credentials
+await authService.login({ email: "any@email.com", password: "anything" });
+// Returns: { user: { id, email, name }, token: "mock-jwt-token-..." }
+```
+
+**2. Session Persistence**
+
+Uses Zustand's `persist` middleware with localStorage:
+- Session survives page reloads
+- Token stored in localStorage (not sessionStorage)
+- Auto-hydrates on app load
+
+```typescript
+// Auth store automatically persists:
+// - user
+// - token
+// - isAuthenticated
+```
+
+**3. Route Protection**
+
+Two guard components protect routes:
+
+```typescript
+// Protect authenticated routes
+<ProtectedRoute>
+  <DashboardPage />
+</ProtectedRoute>
+
+// Redirect authenticated users away from auth pages
+<PublicRoute>
+  <LoginPage />
+</PublicRoute>
+```
+
+**4. Using Auth in Components**
+
+```typescript
+import { useAuth } from "@features/auth";
+
+function MyComponent() {
+  const { user, isAuthenticated, login, logout } = useAuth();
+  
+  // Login
+  await login({ email, password, rememberMe });
+  
+  // Logout
+  logout();
+}
+```
+
+#### Migration to Real API
+
+To replace mocked auth with real API:
+
+**Step 1**: Update `authService.ts`
+```typescript
+// Before (mocked)
+login: async (credentials) => {
+  await delay(400);
+  return { user: mockUser, token: mockToken };
+}
+
+// After (real API)
+login: async (credentials) => {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials),
+  });
+  return response.json();
+}
+```
+
+**Step 2**: Add error handling
+```typescript
+try {
+  await login(credentials);
+} catch (error) {
+  // Handle API errors
+}
+```
+
+**No changes needed to**:
+- Auth store
+- Auth hooks
+- Route guards
+- UI components
+- Form validation
+
 ---
 
 ## Feature Anatomy

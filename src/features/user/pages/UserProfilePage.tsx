@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "../hooks/useUser";
-import { userIdSchema, type UserIdFormData } from "@shared/lib/validations";
+import { userIdSelectorSchema, type UserIdFormData } from "@shared/lib/validations";
 import { Input } from "@shared/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 
@@ -12,7 +12,7 @@ export const UserProfilePage: React.FC = () => {
         watch,
         formState: { errors },
     } = useForm<UserIdFormData>({
-        resolver: zodResolver(userIdSchema),
+        resolver: zodResolver(userIdSelectorSchema),
         defaultValues: {
             userId: 1,
         },
