@@ -1,16 +1,24 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Sidebar } from "@shared/components/layout/Sidebar";
 import { DashboardPage } from "@features/dashboard";
 import {
   LoginPage,
   SignupPage,
   ForgotPasswordPage,
   ResetPasswordPage,
-  ProtectedRoute,
   PublicRoute,
 } from "@features/auth";
+import { DashboardLayout } from "@shared/components/layout/DashboardLayout";
+import { DashboardSubPage } from "@features/dashboard/pages/DashboardSubPage";
+import { AnalyticsPage } from "@features/analytics/pages/AnalyticsPage";
+import { OrdersPage } from "@features/orders/pages/OrdersPage";
+import { ProductsPage } from "@features/products/pages/ProductsPage";
+import { CustomersPage } from "@features/customers/pages/CustomersPage";
+import { FinancePage } from "@features/finance/pages/FinancePage";
+import { ReportsPage } from "@features/reports/pages/ReportsPage";
+import { SettingsPage } from "@features/settings/pages/SettingsPage";
+import { HelpPage } from "@features/help/pages/HelpPage";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -64,19 +72,20 @@ function App() {
           />
 
           {/* Protected dashboard routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <div className="flex h-screen overflow-hidden bg-gray-50">
-                  <Sidebar currentPath={window.location.pathname} />
-                  <main className="flex-1 overflow-y-auto">
-                    <DashboardPage />
-                  </main>
-                </div>
-              </ProtectedRoute>
-            }
-          />
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard/*" element={<DashboardSubPage />} />
+
+            {/* Feature Placeholders */}
+            <Route path="/analytics/*" element={<AnalyticsPage />} />
+            <Route path="/orders/*" element={<OrdersPage />} />
+            <Route path="/products/*" element={<ProductsPage />} />
+            <Route path="/customers/*" element={<CustomersPage />} />
+            <Route path="/finance/*" element={<FinancePage />} />
+            <Route path="/reports/*" element={<ReportsPage />} />
+            <Route path="/settings/*" element={<SettingsPage />} />
+            <Route path="/help/*" element={<HelpPage />} />
+          </Route>
 
           {/* Root redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
