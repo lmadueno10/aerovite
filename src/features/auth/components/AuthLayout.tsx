@@ -22,6 +22,11 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
                 <div className="bg-white py-8 px-4 shadow-sm rounded-xl sm:px-10">
                     {children}
                 </div>
+
+                {/* Global Footer */}
+                <div className="mt-8 text-center text-xs text-gray-500">
+                    &copy; {new Date().getFullYear()} PartScale. All rights reserved.
+                </div>
             </div>
         </div>
     );
