@@ -18,6 +18,7 @@ export const LoginPage = () => {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
@@ -79,7 +80,13 @@ export const LoginPage = () => {
                     {/* Remember me & Forgot password */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="rememberMe" {...register("rememberMe")} />
+                            <Checkbox
+                                id="rememberMe"
+                                onCheckedChange={(checked) => {
+                                    // Manually set the value as boolean
+                                    setValue("rememberMe", checked === true);
+                                }}
+                            />
                             <Label htmlFor="rememberMe" className="text-sm font-normal cursor-pointer">
                                 Remember me
                             </Label>
