@@ -18,6 +18,7 @@ import { CustomersPage } from "@features/customers/pages/CustomersPage";
 import { FinancePage } from "@features/finance/pages/FinancePage";
 import { ReportsPage } from "@features/reports/pages/ReportsPage";
 import { SettingsPage } from "@features/settings/pages/SettingsPage";
+import { ProfilePage } from "@features/user/pages/ProfilePage";
 import { HelpPage } from "@features/help/pages/HelpPage";
 
 // Create a client
@@ -84,6 +85,7 @@ function App() {
             <Route path="/finance/*" element={<FinancePage />} />
             <Route path="/reports/*" element={<ReportsPage />} />
             <Route path="/settings/*" element={<SettingsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/help/*" element={<HelpPage />} />
           </Route>
 
