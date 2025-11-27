@@ -18,6 +18,7 @@ export const SignupPage = () => {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<SignupFormData>({
         resolver: zodResolver(signupSchema),
@@ -108,7 +109,13 @@ export const SignupPage = () => {
 
                     {/* Accept Terms */}
                     <div className="flex items-start space-x-2">
-                        <Checkbox id="acceptTerms" {...register("acceptTerms")} className="mt-1" />
+                        <Checkbox
+                            id="acceptTerms"
+                            onCheckedChange={(checked) => {
+                                setValue("acceptTerms", checked === true);
+                            }}
+                            className="mt-1"
+                        />
                         <Label htmlFor="acceptTerms" className="text-sm font-normal cursor-pointer">
                             I agree to the{" "}
                             <a href="#" className="text-primary hover:text-primary/80">
