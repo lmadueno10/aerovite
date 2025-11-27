@@ -1,9 +1,18 @@
-import { PanelLeftClose, PanelLeftOpen, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { PanelLeftClose, PanelLeftOpen, User, UserCircle, Settings, LogOut } from "lucide-react";
 import { cn } from "@shared/lib/utils";
 import { Button } from "@shared/components/ui/button";
 import { Separator } from "@shared/components/ui/separator";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
 import { sidebarConfig } from "@shared/config/sidebar";
 import { useSidebarStore } from "@shared/store/sidebarStore";
+import { useAuth } from "@features/auth";
 import { SidebarNavGroup } from "./SidebarNavGroup";
 import { SidebarNavItem } from "./SidebarNavItem";
 
@@ -13,6 +22,13 @@ interface SidebarProps {
 
 export const Sidebar = ({ currentPath = "/" }: SidebarProps) => {
     const { isCollapsed, toggleCollapse } = useSidebarStore();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
+    };
 
     return (
         <aside
@@ -70,32 +86,69 @@ export const Sidebar = ({ currentPath = "/" }: SidebarProps) => {
                 })}
             </nav>
 
-            {/* Bottom Section */}
-            <div className="border-t border-gray-200 p-3 space-y-3">
-                <Separator className="my-2" />
+            {/* Bottom Section with User Menu */}
+            <div className="border-t border-gray-200 p-3">
+                <Separator className="mb-3" />
 
-                {/* User Profile */}
-                <div
-                    className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer",
-                        isCollapsed && "justify-center px-2"
-                    )}
-                >
-                    <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full flex-shrink-0">
-                        <User className="h-4 w-4 text-gray-600" />
-                    </div>
+                {/* Interactive User Block */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button
+                            className={cn(
+                                "flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                                isCollapsed && "justify-center px-2"
+                            )}
+                            aria-label="User menu"
+                        >
+                            <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full flex-shrink-0">
+                                <User className="h-4 w-4 text-gray-600" />
+                            </div>
 
-                    {!isCollapsed && (
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                                Luis M
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                                luis@aerovite.com
-                            </p>
-                        </div>
-                    )}
-                </div>
+                            {!isCollapsed && (
+                                <div className="flex-1 min-w-0 text-left">
+                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                        {user?.name || "User"}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate">
+                                        {user?.email || "user@aerovite.com"}
+                                    </p>
+                                </div>
+                            )}
+                        </button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                        side={isCollapsed ? "right" : "top"}
+                        align={isCollapsed ? "start" : "center"}
+                        className="w-56"
+                    >
+                        <DropdownMenuItem
+                            onClick={() => navigate("/profile")}
+                            className="cursor-pointer"
+                        >
+                            <UserCircle className="mr-2 h-4 w-4" />
+                            <span>My Profile</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                            onClick={() => navigate("/settings")}
+                            className="cursor-pointer"
+                        >
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Settings</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem
+                            onClick={handleLogout}
+                            className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                        >
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Sign Out</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </aside>
     );
