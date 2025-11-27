@@ -42,7 +42,7 @@ export const SignupPage = () => {
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
                     <p className="mt-2 text-sm text-gray-600">
-                        Get started with Aerovite today.
+                        Get started with PartScale today.
                     </p>
                 </div>
 

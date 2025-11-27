@@ -10,12 +10,12 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
             <div className="max-w-md w-full space-y-8">
                 {/* Logo/Brand */}
                 <div className="text-center">
-                    <div className="flex items-center justify-center">
-                        <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-lg">
-                            <span className="text-white font-bold text-xl">A</span>
+                    <div className="flex justify-center mb-4">
+                        <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-xl">
+                            <span className="text-white font-bold text-xl">P</span>
                         </div>
                     </div>
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900">Aerovite</h2>
+                    <h2 className="mt-6 text-3xl font-bold text-gray-900">PartScale</h2>
                 </div>
 
                 {/* Auth Form Content */}

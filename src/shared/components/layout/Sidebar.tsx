@@ -42,9 +42,9 @@ export const Sidebar = ({ currentPath = "/" }: SidebarProps) => {
                 {!isCollapsed && (
                     <div className="flex items-center gap-2">
                         <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
-                            <span className="text-white font-bold text-sm">A</span>
+                            <span className="text-white font-bold text-sm">P</span>
                         </div>
-                        <span className="font-semibold text-gray-900">Aerovite</span>
+                        <span className="font-semibold text-gray-900">PartScale</span>
                     </div>
                 )}
 
@@ -110,7 +110,7 @@ export const Sidebar = ({ currentPath = "/" }: SidebarProps) => {
                                         {user?.name || "User"}
                                     </p>
                                     <p className="text-xs text-gray-500 truncate">
-                                        {user?.email || "user@aerovite.com"}
+                                        {user?.email || "user@partscale.com"}
                                     </p>
                                 </div>
                             )}
